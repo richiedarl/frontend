@@ -1,6 +1,14 @@
 import { notFound } from "next/navigation";
 
-const fallbackProducts = [
+type Product = {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  image: string;
+};
+
+const fallbackProducts: Product[] = [
   {
     id: 1,
     title: "Classic Wireless Headphones",
@@ -24,23 +32,31 @@ const fallbackProducts = [
   },
 ];
 
-async function getProduct(id: string) {
+async function getProduct(id: string): Promise<Product | null> {
   try {
     const res = await fetch(`https://fakestoreapi.com/products/${id}`, {
-      cache: 'no-store',
+      cache: "no-store",
     });
+
     if (!res.ok) throw new Error("API error");
-    return await res.json();
+
+    const product: Product = await res.json();
+    return product;
   } catch (error) {
-    console.warn("API failed, trying fallback.");
-    const fallback = fallbackProducts.find(p => p.id === Number(id));
-    if (!fallback) return null;
-    return fallback;
+    console.warn(`${error}: API failed, trying fallback.`);
+    const fallback = fallbackProducts.find((p) => p.id === Number(id));
+    return fallback || null;
   }
 }
 
-export default async function ProductDetailPage({ params }: { params: { id: string } }) {
-  const product = await getProduct(params.id);
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const product = await getProduct(id);
 
   if (!product) return notFound();
 
@@ -49,7 +65,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
       <img
         src={product.image}
         alt={product.title}
-        className="w-full max-w-sm mx-auto mb-6"
+        className="w-full max-w-sm mx-auto mb-6 object-contain"
       />
       <h1 className="text-2xl font-bold mb-2">{product.title}</h1>
       <p className="text-gray-700 mb-4">{product.description}</p>

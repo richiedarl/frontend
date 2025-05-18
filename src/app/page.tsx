@@ -1,7 +1,7 @@
-// src/app/page.tsx
 import ProductCard from "@/components/ProductCard";
 
-const products = [
+
+const fallbackProducts = [
   {
     id: 1,
     title: "Classic Wireless Headphones",
@@ -25,10 +25,26 @@ const products = [
   },
 ];
 
-export default function HomePage() {
+// Server component
+async function getProducts() {
+  try {
+    const res = await fetch('https://fakestoreapi.com/products', { cache: 'no-store' });
+
+    if (!res.ok) throw new Error("API error");
+
+    return await res.json();
+  } catch (error) {
+    console.error("Failed to fetch API, using fallback products.", error);
+    return fallbackProducts;
+  }
+}
+
+export default async function HomePage() {
+  const products = await getProducts();
+
   return (
     <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 bg-gray-50 min-h-screen">
-      {products.map((product) => (
+      {products.map((product: any) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>

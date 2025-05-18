@@ -1,7 +1,7 @@
 // src/app/layout.tsx
 import { CartProvider } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
-import './styles/globals.css';
+import './globals.css';
 
 
 

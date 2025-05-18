@@ -1,37 +1,25 @@
 "use client";
-import React from "react";
-import "./ProductCard.css"; // Import the CSS file
 
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  image: string;
-}
+import { Product } from "@/context/CartContext";
+import { useCart } from "@/context/CartContext";
+import Link from "next/link";
 
-interface ProductCardProps {
-  product: Product;
-}
+export default function ProductCard({ product }: { product: Product }) {
+  const { addToCart } = useCart();
 
-export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <div className="product-card">
-      <div className="product-image">
-        <img
-          src={product.image}
-          alt={product.title}
-          loading="lazy"
-        />
-      </div>
-      <div className="product-info">
-        <h3>{product.title}</h3>
-        <p className="price">${product.price.toFixed(2)}</p>
-        <p className="description">{product.description}</p>
-        <button onClick={() => alert(`Add ${product.title} to cart!`)}>
-          Add to Cart
-        </button>
-      </div>
+    <div className="border rounded-lg p-4 bg-white shadow hover:shadow-lg transition">
+      <Link href={`/products/${product.id}`}>
+        <img src={product.image} alt={product.title} className="w-full h-48 object-contain mb-4" />
+        <h2 className="text-lg font-semibold">{product.title}</h2>
+        <p className="text-blue-600 font-bold">${product.price}</p>
+      </Link>
+      <button
+        onClick={() => addToCart(product)}
+        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Add to Cart
+      </button>
     </div>
   );
 }
